@@ -146,7 +146,6 @@ def sentence_postprocess(words: List[Any], time_stamp: List[List] = None):
     word_lists = []
     word_item = ""
     ts_lists = []
-
     # wash words lists
     for i in words:
         word = ""
@@ -247,7 +246,7 @@ def sentence_postprocess(words: List[Any], time_stamp: List[List] = None):
         for ch in word_lists:
             if ch != " ":
                 real_word_lists.append(ch)
-        sentence = "".join(word_lists).strip()
+        sentence = " ".join(word_lists).strip()
         return sentence, real_word_lists
 
 
@@ -300,6 +299,8 @@ def sentence_postprocess_sentencepiece(words):
                 ch = ch.replace("i'll", "I'll")
             real_word_lists.append(ch)
     sentence = "".join(word_lists)
+    print(sentence)
+
     return sentence, real_word_lists
 
 

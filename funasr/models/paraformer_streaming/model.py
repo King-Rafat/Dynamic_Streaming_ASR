@@ -9,6 +9,7 @@ import logging
 from typing import Dict, Tuple
 from contextlib import contextmanager
 from distutils.version import LooseVersion
+import unicodedata
 
 from funasr.register import tables
 from funasr.models.ctc.ctc import CTC
@@ -545,11 +546,13 @@ class ParaformerStreaming(Paraformer):
 
                 # Change integer-ids to tokens
                 token = tokenizer.ids2tokens(token_int)
-                # text = tokenizer.tokens2text(token)
 
                 result_i = token
 
-                results.extend(result_i)
+                results.append(result_i)
+                # result_i = token
+
+                # results.extend(text)
 
         return results
 
@@ -635,8 +638,9 @@ class ParaformerStreaming(Paraformer):
                 frontend=frontend,
                 **kwargs,
             )
+            print("TackTack")
+            # tokens.append(tokens_i)
             tokens.extend(tokens_i)
-
         text_postprocessed, _ = postprocess_utils.sentence_postprocess(tokens)
 
         result_i = {"key": key[0], "text": text_postprocessed}
