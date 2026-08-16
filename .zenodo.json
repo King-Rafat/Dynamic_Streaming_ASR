@@ -1,0 +1,64 @@
+{
+  "title": "Dynamic Block-Online Streaming ASR for Low-Resource Agglutinative Code-Switching Speech with Morphology-Aware Evaluation",
+  "description": "<p>Code and resources for the Interspeech 2026 <strong>oral</strong> paper. Contains the reference implementation of <strong>Fine-Grained CS-WER</strong> (E_switch / E_root / E_morph), a morphology-aware evaluation metric for Bangla-English intra-sentential code-switching, and the 737-entry loanword lexicon used for <strong>Script-Anchored Loanword Injection</strong>.</p><p>Training and finetuning use FunASR upstream; this repository does not vendor a copy of it.</p>",
+  "upload_type": "software",
+  "license": "MIT",
+  "access_right": "open",
+  "language": "eng",
+  "creators": [
+    {
+      "name": "Rafat, Kazi",
+      "affiliation": "Apurba NSU R&D Lab, North South University, Dhaka, Bangladesh"
+    },
+    {
+      "name": "Imran, Afifa",
+      "affiliation": "Apurba NSU R&D Lab, North South University, Dhaka, Bangladesh"
+    },
+    {
+      "name": "Hossain, Md. Ismail",
+      "affiliation": "Apurba NSU R&D Lab, North South University, Dhaka, Bangladesh"
+    },
+    {
+      "name": "Ali, Md. Romzan",
+      "affiliation": "Apurba NSU R&D Lab, North South University, Dhaka, Bangladesh"
+    },
+    {
+      "name": "Rahman, Fuad",
+      "affiliation": "Apurba Technologies, Dhaka, Bangladesh"
+    },
+    {
+      "name": "Momen, Sifat",
+      "affiliation": "Apurba NSU R&D Lab, North South University, Dhaka, Bangladesh"
+    },
+    {
+      "name": "Rahman, Shafin",
+      "affiliation": "Apurba NSU R&D Lab, North South University, Dhaka, Bangladesh"
+    },
+    {
+      "name": "Mohammed, Nabeel",
+      "affiliation": "Apurba NSU R&D Lab, North South University, Dhaka, Bangladesh"
+    }
+  ],
+  "keywords": [
+    "speech recognition",
+    "streaming ASR",
+    "code-switching",
+    "intra-sentential code-switching",
+    "agglutinative morphology",
+    "Bangla",
+    "Bengali",
+    "low-resource languages",
+    "CS-WER",
+    "evaluation metric",
+    "Paraformer",
+    "voice activity detection"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/King-Rafat/Dynamic_Streaming_ASR",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ],
+  "notes": "Accepted for oral presentation at Interspeech 2026."
+}

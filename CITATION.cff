@@ -1,0 +1,69 @@
+cff-version: 1.2.0
+message: "If you use this software or the CS-WER metric, please cite the paper below."
+title: "Dynamic Block-Online Streaming ASR for Low-Resource Agglutinative Code-Switching Speech with Morphology-Aware Evaluation"
+abstract: >-
+  Reference implementation of Fine-Grained CS-WER (E_switch / E_root / E_morph),
+  a morphology-aware evaluation metric for Bangla-English intra-sentential
+  code-switching, together with the 737-entry loanword lexicon used for
+  Script-Anchored Loanword Injection.
+type: software
+license: MIT
+repository-code: "https://github.com/King-Rafat/Dynamic_Streaming_ASR"
+keywords:
+  - speech recognition
+  - streaming ASR
+  - code-switching
+  - agglutinative morphology
+  - Bangla
+  - low-resource languages
+  - CS-WER
+
+authors:
+  - family-names: Rafat
+    given-names: Kazi
+    affiliation: "Apurba NSU R&D Lab, North South University, Dhaka, Bangladesh"
+    email: kazi.meem@northsouth.edu
+  - family-names: Imran
+    given-names: Afifa
+    affiliation: "Apurba NSU R&D Lab, North South University, Dhaka, Bangladesh"
+  - family-names: Hossain
+    given-names: "Md. Ismail"
+    affiliation: "Apurba NSU R&D Lab, North South University, Dhaka, Bangladesh"
+  - family-names: Ali
+    given-names: "Md. Romzan"
+    affiliation: "Apurba NSU R&D Lab, North South University, Dhaka, Bangladesh"
+  - family-names: Rahman
+    given-names: Fuad
+    affiliation: "Apurba Technologies, Dhaka, Bangladesh"
+  - family-names: Momen
+    given-names: Sifat
+    affiliation: "Apurba NSU R&D Lab, North South University, Dhaka, Bangladesh"
+  - family-names: Rahman
+    given-names: Shafin
+    affiliation: "Apurba NSU R&D Lab, North South University, Dhaka, Bangladesh"
+  - family-names: Mohammed
+    given-names: Nabeel
+    affiliation: "Apurba NSU R&D Lab, North South University, Dhaka, Bangladesh"
+
+preferred-citation:
+  type: conference-paper
+  title: "Dynamic Block-Online Streaming ASR for Low-Resource Agglutinative Code-Switching Speech with Morphology-Aware Evaluation"
+  collection-title: "Proc. Interspeech 2026"
+  year: 2026
+  authors:
+    - family-names: Rafat
+      given-names: Kazi
+    - family-names: Imran
+      given-names: Afifa
+    - family-names: Hossain
+      given-names: "Md. Ismail"
+    - family-names: Ali
+      given-names: "Md. Romzan"
+    - family-names: Rahman
+      given-names: Fuad
+    - family-names: Momen
+      given-names: Sifat
+    - family-names: Rahman
+      given-names: Shafin
+    - family-names: Mohammed
+      given-names: Nabeel
