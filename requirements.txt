@@ -1,0 +1,4 @@
+# cs_wer/script_morph_wer.py needs only the standard library.
+# These are required only for the spreadsheet/CSV command-line path:
+pandas>=1.5
+openpyxl>=3.1

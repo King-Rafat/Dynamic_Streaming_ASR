@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.ipynb_checkpoints/
+
+# checkpoints are hosted externally
+*.pt
+*.pth
+*.bin
+*.onnx
+*.safetensors
+exp/
+outputs/
+
+# audio and corpora
+*.wav
+*.flac
+*.mp3
+*.tar.gz
+
+.DS_Store
+.idea/
+.vscode/
