@@ -19,7 +19,7 @@
 [![FunASR](https://img.shields.io/badge/Built%20on-FunASR-FF6A00)](https://github.com/modelscope/FunASR)
 [![Paraformer](https://img.shields.io/badge/Backbone-Paraformer-1565C0)](https://arxiv.org/abs/2206.08317)
 [![Language](https://img.shields.io/badge/Language-Bangla%20%E2%86%94%20English-006A4E)](#-data)
-[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.XXXXXXX-1682D4)](https://doi.org/10.5281/zenodo.XXXXXXX)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21966420.svg)](https://doi.org/10.5281/zenodo.21966420)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/King-Rafat/Dynamic_Streaming_ASR?style=social)](https://github.com/King-Rafat/Dynamic_Streaming_ASR/stargazers)
 
