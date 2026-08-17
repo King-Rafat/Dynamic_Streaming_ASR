@@ -445,12 +445,11 @@ pip install -U funasr
   title     = {Dynamic Block-Online Streaming ASR: CS-WER metric and loanword lexicon},
   year      = {2026},
   publisher = {Zenodo},
-  doi       = {10.5281/zenodo.XXXXXXX},
+  doi       = {10.5281/zenodo.21966420},
   url       = {https://github.com/King-Rafat/Dynamic_Streaming_ASR}
 }
 ```
 
-> Replace `XXXXXXX` with your Zenodo **concept DOI**, the one labelled *"all versions"*, so the link always resolves to the newest release.
 
 ## 🙏 Acknowledgements
 
