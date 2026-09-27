@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dynamic Block-Online Streaming ASR — demos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap">
+<style>
+:root{--ink:#27333D;--ink-2:#5A6975;--muted:#93A0AB;--surface:#F5F8FD;--panel:#FFFFFF;
+--line:#DEE7F3;--accent:#5B7CFA;--loan:#F0653F;--sfx:#1FA5A5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+--ink:#EAF0F7;--ink-2:#BCC9D6;--muted:#8B9AA8;--surface:#141A23;--panel:#1D2530;
+--line:#2E3A48;--accent:#8FA7FF;--loan:#FF9169;--sfx:#5FD0D0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface);color:var(--ink);font-family:"Nunito",system-ui,sans-serif;font-size:15px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto;padding-inline:16px;padding-block:48px}
+h1{font-size:26px;font-weight:800;margin:0 0 8px;letter-spacing:-.01em}
+p.sub{color:var(--ink-2);margin:0 0 28px;max-width:60ch}
+a.card{display:block;text-decoration:none;color:inherit;background:var(--panel);border:1px solid var(--line);
+border-radius:16px;padding:18px 20px;margin-bottom:12px;box-shadow:0 10px 26px rgba(63,94,160,.08);
+transition:transform .12s ease,border-color .15s ease}
+a.card:hover{transform:translateY(-2px);border-color:var(--accent)}
+a.card b{display:block;font-size:17px;font-weight:800;margin-bottom:2px}
+a.card span{color:var(--muted);font-size:13.5px;font-weight:600}
+footer{margin-top:28px;font-size:13px;color:var(--muted);font-weight:600}
+footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Dynamic Block-Online Streaming ASR</h1>
+  <p class="sub">Interactive demos for the Interspeech 2026 paper on Bangla–English code-switching speech recognition.</p>
+  <a class="card" href="injection.html"><b>Loanword injection</b><span>Play a sentence and watch the script switch mid-word</span></a>
+  <a class="card" href="cs-wer.html"><b>CS-WER scorer</b><span>Hover a score to see what it measures</span></a>
+  <a class="card" href="cuts.html"><b>Where the cut lands</b><span>Fixed chunks versus pause-aligned blocks</span></a>
+  <footer>Code, models and the CS-WER implementation: <a href="https://github.com/King-Rafat/Dynamic_Streaming_ASR">github.com/King-Rafat/Dynamic_Streaming_ASR</a></footer>
+</div>
+</body>
+</html>

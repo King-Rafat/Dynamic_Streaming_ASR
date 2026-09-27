@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="CS-WER Scorer — companion demo for the Interspeech 2026 paper Dynamic Block-Online Streaming ASR.">
+</head>
+<body>
+<title>CS-WER Scorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&family=Baloo+Da+2:wght@400;600;800&display=swap">
+
+<style>
+:root{
+  --ink:#27333D; --ink-2:#5A6975; --muted:#93A0AB;
+  --surface:#F5F8FD; --panel:#FFFFFF; --panel-2:#EEF3FB;
+  --line:#DEE7F3; --line-soft:#EAF0F8;
+  --accent:#5B7CFA; --accent-soft:#E6ECFF;
+  --loan:#F0653F; --loan-soft:#FFE9E1;
+  --sfx:#1FA5A5; --sfx-soft:#DAF4F4;
+  --prev:#8B5CF6; --prev-soft:#EDE6FF;
+  --good:#22A06B; --on-accent:#FFFFFF;
+  --r:16px;
+  --shadow:0 2px 0 rgba(39,51,61,.04), 0 10px 26px rgba(63,94,160,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ink:#EAF0F7; --ink-2:#BCC9D6; --muted:#8B9AA8;
+    --surface:#141A23; --panel:#1D2530; --panel-2:#242E3B;
+    --line:#2E3A48; --line-soft:#26313D;
+    --accent:#8FA7FF; --accent-soft:#25304A;
+    --loan:#FF9169; --loan-soft:#3A2820;
+    --sfx:#5FD0D0; --sfx-soft:#173333;
+    --prev:#B49BF5; --prev-soft:#2B2340;
+    --good:#5BCB98; --on-accent:#131A24;
+    --shadow:0 2px 0 rgba(0,0,0,.2), 0 12px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ink:#EAF0F7; --ink-2:#BCC9D6; --muted:#8B9AA8;
+  --surface:#141A23; --panel:#1D2530; --panel-2:#242E3B;
+  --line:#2E3A48; --line-soft:#26313D;
+  --accent:#8FA7FF; --accent-soft:#25304A;
+  --loan:#FF9169; --loan-soft:#3A2820;
+  --sfx:#5FD0D0; --sfx-soft:#173333;
+  --prev:#B49BF5; --prev-soft:#2B2340;
+  --good:#5BCB98; --on-accent:#131A24;
+  --shadow:0 2px 0 rgba(0,0,0,.2), 0 12px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--surface); color:var(--ink);
+  font-family:"Nunito",ui-rounded,system-ui,sans-serif; font-size:15px; line-height:1.5}
+.bn{font-family:"Baloo Da 2","Noto Serif Bengali",serif}
+.wrap{max-width:860px; margin:0 auto; padding-inline:16px; padding-block:30px 44px}
+header{display:flex; flex-wrap:wrap; gap:6px 12px; align-items:baseline; justify-content:space-between; margin-bottom:16px}
+h1{font-size:22px; font-weight:800; margin:0; letter-spacing:-.01em}
+header span{font-size:13px; color:var(--muted); font-weight:600}
+.demo{background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:20px; box-shadow:var(--shadow)}
+.row{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:16px}
+button.hyp{
+  appearance:none; font:inherit; font-size:13.5px; font-weight:700; cursor:pointer;
+  background:var(--panel-2); color:var(--ink-2); border:0; border-radius:999px; padding:8px 16px;
+  transition:transform .12s ease, background-color .15s ease, color .15s ease;
+}
+button.hyp[aria-pressed="true"]{background:var(--accent); color:var(--on-accent)}
+button.hyp:active{transform:translateY(1px)}
+button.hyp:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+
+.lines{background:var(--panel-2); border-radius:12px; padding:14px 16px}
+.line{display:flex; gap:10px; align-items:flex-start; font-size:21px}
+.line + .line{margin-top:8px}
+.line .k{
+  flex:0 0 auto; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); font-weight:800; padding-top:8px; min-width:34px;
+  font-family:"Nunito",sans-serif;
+}
+.words{display:flex; flex-wrap:wrap; gap:4px 7px; align-items:baseline}
+.w{padding:2px 6px; border-radius:8px; border:2px solid transparent; transition:background-color .15s, border-color .15s, color .15s}
+.w .root{font-weight:800}
+.w.eng .root{color:var(--loan)}
+.w.eng .sfx{color:var(--sfx); font-weight:600}
+.w.wrong{text-decoration:underline; text-decoration-style:wavy; text-decoration-color:var(--loan); text-underline-offset:5px}
+
+/* highlight states driven by the metric tiles — each one lights only what it scores */
+.w .root,.w .sfx{border-radius:7px; padding:1px 2px}
+.lines.hl-switch .w.is-prev{background:var(--prev-soft); border-color:var(--prev)}
+.lines.hl-switch .w.is-eng .root{background:var(--loan-soft); box-shadow:0 0 0 2px var(--loan)}
+.lines.hl-root .w.is-eng .root{background:var(--loan-soft); box-shadow:0 0 0 2px var(--loan)}
+.lines.hl-morph .w.is-eng .root{background:var(--loan-soft); box-shadow:0 0 0 2px var(--loan)}
+.lines.hl-morph .w.is-eng .sfx{background:var(--sfx-soft); box-shadow:0 0 0 2px var(--sfx)}
+.lines.dim .w{opacity:.34}
+.lines.hl-switch .w.is-prev,.lines.hl-switch .w.is-eng,
+.lines.hl-root .w.is-eng,.lines.hl-morph .w.is-eng{opacity:1}
+
+.nums{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:16px}
+.num{
+  border:2px solid var(--line); border-radius:14px; padding:12px 14px; background:var(--panel);
+  cursor:pointer; text-align:left; font:inherit; color:inherit; transition:border-color .15s, transform .12s;
+}
+.num:hover,.num:focus-visible,.num.on{border-color:var(--accent); transform:translateY(-2px); outline:none}
+.num .n{font-size:12px; font-weight:800; letter-spacing:.04em; color:var(--ink-2)}
+.num .what{font-size:11.5px; color:var(--muted); font-weight:600; margin-top:1px}
+.num .v{font-size:30px; font-weight:800; font-variant-numeric:tabular-nums; margin-top:4px}
+.num .v.zero{color:var(--good)}
+.num .v.high{color:var(--loan)}
+.hint{margin:12px 0 0; font-size:12.5px; color:var(--muted); font-weight:600}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:560px){ .nums{grid-template-columns:1fr} }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>CS-WER Scorer</h1>
+    <span>hover a number to see what it looks at</span>
+  </header>
+
+  <div class="demo">
+    <div class="row" id="hyp-buttons"></div>
+
+    <div class="lines" id="lines">
+      <div class="line"><span class="k">ref</span><span class="words bn" id="ref-line"></span></div>
+      <div class="line"><span class="k">hyp</span><span class="words bn" id="hyp-line"></span></div>
+    </div>
+
+    <div class="nums">
+      <button class="num" type="button" data-hl="switch">
+        <div class="n">E_switch</div>
+        <div class="what">previous word + English root</div>
+        <div class="v" id="m-s">—</div>
+      </button>
+      <button class="num" type="button" data-hl="root">
+        <div class="n">E_root</div>
+        <div class="what">English root only</div>
+        <div class="v" id="m-r">—</div>
+      </button>
+      <button class="num" type="button" data-hl="morph">
+        <div class="n">E_morph</div>
+        <div class="what">root + Bangla suffix</div>
+        <div class="v" id="m-m">—</div>
+      </button>
+    </div>
+    <p class="hint">0 is perfect. Each score counts code-switch instances, not words.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var REF="collegeটা ঢাকা শিক্ষা boardের আওতাধীন এবং জাতীয়";
+var HYPS=[
+ {name:"fixed chunks", hyp:"collegeটা ঢাকা শিক্ষা bordর আওতাধীন এবং যাতীয়"},
+ {name:"no injection", hyp:"কলেজটা ঢাকা শিক্ষা বোর্ডের আওতাধীন এবং জাতীয়"},
+ {name:"block-online", hyp:"collegeটা ঢাকা শিক্ষা boardের আওতাধীন এবং জাতীয়"}
+];
+
+var SUF=["গুলো","গুলি","গুলা","গুলোর","গুলির","গুলার","গুলোতে","গুলিতে","গুলায়","গুলোকে","গুলিকে","গুলাকে",
+"দেরকে","দের","সমূহ","সমূহের","সমূহে","টাতে","টায়","টার","টিতে","টির","টাই","খানা","খানি","খান","টুকু","টুকুন","টুক",
+"গুলোও","গুলিও","ভাবে","গত","ময়","হীন","জনিত","পনা","গিরি","ওয়ালা","ওয়ালি","কারী","রা","এরা","ের","র","য়ের","কার",
+"কে","রে","তে","এ","য়","সহ","টা","টি","ই","ও"];
+var ENG=/[a-zA-Z]/;
+function norm(t){return t.replace(/#E/g,"").toLowerCase().trim();}
+function parts(t){return t.match(/[a-zA-Z]+|[^a-zA-Z]+/g)||[];}
+
+function trips(text){
+  var tk=text.trim().split(/\s+/).filter(Boolean),out=[];
+  for(var i=0;i<tk.length;i++){
+    if(!ENG.test(tk[i]))continue;
+    var prev=i>0?norm(tk[i-1]):"<START>",c=norm(tk[i]),p=parts(c);
+    if(p.length>1){ out.push([prev,p[0],p[1]]); continue; }
+    if(i+1<tk.length) out.push([prev,c,SUF.indexOf(tk[i+1])!==-1?norm(tk[i+1]):"#1"]);
+    else out.push([prev,c,"<EOS>"]);
+  }
+  return out;
+}
+function csScore(ref,hyp){
+  var R=trips(ref),H=trips(hyp),n=R.length;
+  if(!n) return {s:0,r:0,m:0,n:0};
+  var pm=H.map(function(t){return t[1]+"|"+t[2];}),
+      pr=H.map(function(t){return t[1];}),
+      ps=H.map(function(t){return t[0]+"|"+t[1];}),cm=0,cr=0,cs=0;
+  R.forEach(function(t){
+    var a=pm.indexOf(t[1]+"|"+t[2]); if(a>-1){cm++;pm.splice(a,1);}
+    var b=pr.indexOf(t[1]);          if(b>-1){cr++;pr.splice(b,1);}
+    var c=ps.indexOf(t[0]+"|"+t[1]); if(c>-1){cs++;ps.splice(c,1);}
+  });
+  return {s:(n-cs)/n, r:(n-cr)/n, m:(n-cm)/n, n:n};
+}
+
+function renderLine(el, text, compare){
+  var tk=text.trim().split(/\s+/).filter(Boolean);
+  var ct=compare?compare.trim().split(/\s+/):null;
+  el.innerHTML="";
+  tk.forEach(function(tok,i){
+    var w=document.createElement("span");
+    w.className="w";
+    var isEng=ENG.test(tok);
+    if(isEng){
+      w.classList.add("eng","is-eng");
+      var p=parts(tok);
+      var root=document.createElement("span"); root.className="root"; root.textContent=p[0];
+      w.appendChild(root);
+      if(p.length>1){
+        var sf=document.createElement("span"); sf.className="sfx bn"; sf.textContent=p.slice(1).join("");
+        w.appendChild(sf);
+      }
+      if(i>0) tk[i-1] && el.children[i-1] && el.children[i-1].classList.add("is-prev");
+    } else {
+      w.textContent=tok;
+    }
+    if(ct && ct[i]!==tok) w.classList.add("wrong");
+    el.appendChild(w);
+  });
+  // mark the word before each English token (after all nodes exist)
+  Array.prototype.forEach.call(el.children,function(node,i){
+    if(node.classList.contains("is-eng") && i>0) el.children[i-1].classList.add("is-prev");
+  });
+}
+
+var hypIdx=0, btnRow=document.getElementById("hyp-buttons"), lines=document.getElementById("lines");
+HYPS.forEach(function(o,i){
+  var b=document.createElement("button");
+  b.type="button"; b.className="hyp"; b.textContent=o.name;
+  b.setAttribute("aria-pressed", i===0?"true":"false");
+  b.addEventListener("click",function(){ hypIdx=i; render(); });
+  btnRow.appendChild(b);
+});
+
+function render(){
+  Array.prototype.forEach.call(btnRow.children,function(b,i){
+    b.setAttribute("aria-pressed", i===hypIdx?"true":"false");
+  });
+  var hyp=HYPS[hypIdx].hyp, sc=csScore(REF,hyp);
+  renderLine(document.getElementById("ref-line"), REF, null);
+  renderLine(document.getElementById("hyp-line"), hyp, REF);
+  [["m-s",sc.s],["m-r",sc.r],["m-m",sc.m]].forEach(function(p){
+    var el=document.getElementById(p[0]);
+    el.textContent=sc.n?p[1].toFixed(2):"—";
+    el.className="v"+(p[1]===0?" zero":(p[1]>=0.5?" high":""));
+  });
+}
+
+function setHl(kind){
+  lines.className="lines" + (kind ? " hl-"+kind+" dim" : "");
+  Array.prototype.forEach.call(document.querySelectorAll(".num"),function(b){
+    b.classList.toggle("on", !!kind && b.dataset.hl===kind);
+  });
+}
+Array.prototype.forEach.call(document.querySelectorAll(".num"),function(b){
+  var k=b.dataset.hl;
+  b.addEventListener("mouseenter",function(){ setHl(k); });
+  b.addEventListener("mouseleave",function(){ setHl(null); });
+  b.addEventListener("focus",function(){ setHl(k); });
+  b.addEventListener("blur",function(){ setHl(null); });
+  b.addEventListener("click",function(){ setHl(b.classList.contains("on")?null:k); });
+});
+
+render();
+})();
+</script>
+
+</body>
+</html>

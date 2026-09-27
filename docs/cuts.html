@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Where the Cut Lands — companion demo for the Interspeech 2026 paper Dynamic Block-Online Streaming ASR.">
+</head>
+<body>
+<title>Where the Cut Lands</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Serif+Bengali:wght@400;600&display=swap">
+
+<style>
+:root{
+  --ink:#0E2E36; --ink-2:#3C585F; --muted:#6E838A;
+  --surface:#F3F6F6; --panel:#FFFFFF; --panel-2:#EAF0F1;
+  --line:#D6E1E3; --line-soft:#E6EDEE;
+  --accent:#2A6C86; --accent-soft:#E2EDF1;
+  --rust:#A9573A; --rust-soft:#F5E9E3;
+  --good:#3F7A68; --on-accent:#FFFFFF;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ink:#E8EFF0; --ink-2:#BACCD1; --muted:#8CA3AA;
+    --surface:#0C1618; --panel:#132226; --panel-2:#182D32;
+    --line:#263C42; --line-soft:#1D3035;
+    --accent:#77B4CC; --accent-soft:#17323D;
+    --rust:#D7966F; --rust-soft:#33241C;
+    --good:#7CBBA6; --on-accent:#07171C;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ink:#E8EFF0; --ink-2:#BACCD1; --muted:#8CA3AA;
+  --surface:#0C1618; --panel:#132226; --panel-2:#182D32;
+  --line:#263C42; --line-soft:#1D3035;
+  --accent:#77B4CC; --accent-soft:#17323D;
+  --rust:#D7966F; --rust-soft:#33241C;
+  --good:#7CBBA6; --on-accent:#07171C;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--surface); color:var(--ink);
+  font-family:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif; font-size:15px; line-height:1.45}
+.bn{font-family:"Noto Serif Bengali",serif}
+.wrap{max-width:820px; margin:0 auto; padding-inline:16px; padding-block:28px 40px}
+header{display:flex; flex-wrap:wrap; gap:6px 12px; align-items:baseline; justify-content:space-between; margin-bottom:16px}
+h1{font-size:19px; font-weight:600; margin:0; letter-spacing:-.01em}
+header span{font-size:12px; color:var(--muted)}
+.demo{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:18px}
+.row{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:14px}
+button.btn{appearance:none; font:inherit; font-size:13px; font-weight:500; cursor:pointer;
+  background:var(--accent); color:var(--on-accent); border:1px solid transparent; border-radius:7px; padding:7px 14px}
+button.btn.ghost{background:transparent; color:var(--ink-2); border-color:var(--line)}
+button.btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+select{font:inherit; font-size:13px; color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:7px; padding:6px 9px}
+input[type="file"]{font-size:12px; color:var(--muted); max-width:200px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.strip + .strip{margin-top:18px}
+.lbl{font-size:12.5px; color:var(--muted); margin-bottom:6px; display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap}
+.lbl b{color:var(--ink); font-weight:600}
+.wordbar,.frames{display:grid; gap:2px}
+.wd{font-size:12.5px; padding:3px 4px; border-radius:4px; background:var(--panel-2); border:1px solid var(--line-soft); text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.wd.loanw{font-weight:600}
+.wd.split{background:var(--rust-soft); border-color:var(--rust); color:var(--rust)}
+.fr{height:24px; border-radius:3px; background:var(--panel-2); border:1px solid var(--line-soft); padding:0; appearance:none; cursor:pointer}
+.fr.vis{background:var(--accent-soft); border-color:var(--accent)}
+.fr.sel{background:var(--accent); border-color:var(--accent)}
+.fr.cached{border-color:var(--accent); opacity:.5}
+.fr.cut{border-left:2px solid var(--rust)}
+.fr:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+</style>
+<div class="wrap">
+  <header><h1>Where the Cut Lands</h1><span>click a frame to see what it can attend to</span></header>
+  <div class="demo">
+    <div class="row">
+      <select id="ex"></select>
+      <select id="chunk">
+        <option value="6">600 ms</option><option value="10">1.0 s</option>
+        <option value="20">2.0 s</option><option value="24" selected>2.4 s</option><option value="30">3.0 s</option>
+      </select>
+    </div>
+    <div class="strip">
+      <div class="lbl"><span>Fixed chunks</span><span>split words <b id="t-f">—</b></span></div>
+      <div class="wordbar bn" id="w-f"></div>
+      <div class="frames" id="f-f"></div>
+    </div>
+    <div class="strip">
+      <div class="lbl"><span>Pause-aligned blocks</span><span>split words <b id="t-b">—</b></span></div>
+      <div class="wordbar bn" id="w-b"></div>
+      <div class="frames" id="f-b"></div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+"use strict";
+
+var LEX={"অফিস":"office","মিটিং":"meeting","ফাইল":"file","কলেজ":"college","বোর্ড":"board","ডক্টর":"doctor","রেজাল্ট":"result"};
+var SENTS=[
+ {name:"office · meeting · file",
+  toks:[{bn:"আমি",d:300},{bn:"অফিসটায়",r:"অফিস",s:"টায়",d:560},{bn:"গিয়ে",d:340},
+        {bn:"মিটিংগুলোর",r:"মিটিং",s:"গুলোর",d:640},{bn:"ফাইলগুলো",r:"ফাইল",s:"গুলো",d:620},{bn:"দেখব",d:380}],
+  pauses:[2,4]},
+ {name:"college · board (Fig. 1)",
+  toks:[{bn:"কলেজটা",r:"কলেজ",s:"টা",d:560},{bn:"ঢাকা",d:330},{bn:"শিক্ষা",d:360},
+        {bn:"বোর্ডের",r:"বোর্ড",s:"ের",d:560},{bn:"আওতাধীন",d:520},{bn:"এবং",d:260},{bn:"জাতীয়",d:380}],
+  pauses:[3,5]},
+ {name:"doctor · result",
+  toks:[{bn:"আমি",d:280},{bn:"ডক্টরকে",r:"ডক্টর",s:"কে",d:560},{bn:"রেজাল্টটা",r:"রেজাল্ট",s:"টা",d:620},{bn:"দেখিয়েছি",d:520}],
+  pauses:[2]}
+];
+function en(t){return t.r?LEX[t.r]:null;}
+
+var FM=100,CAP=30,sel=null,chunk=24,LOOK=3,cur=0;
+var exSel=document.getElementById("ex");
+SENTS.forEach(function(s,i){var o=document.createElement("option");o.value=i;o.textContent=s.name;exSel.appendChild(o);});
+function spansOf(s){ var o=[],f=0; s.toks.forEach(function(t){ var n=Math.max(2,Math.round(t.d/FM)); o.push({st:f,en:f+n-1,lab:en(t)?en(t)+t.s:t.bn,loan:!!en(t)}); f+=n; }); return o; }
+function fixedCuts(n){ var c=[]; for(var f=chunk;f<n;f+=chunk)c.push(f); return c; }
+function pauseCuts(s,sp,n){ var c=[],prev=0;
+  (s.pauses||[]).forEach(function(i){ var x=sp[i]; if(!x)return;
+    while(x.en+1-prev>CAP){prev+=CAP;c.push(prev);} c.push(x.en+1); prev=x.en+1; });
+  while(n-prev>CAP){prev+=CAP;c.push(prev);} return c; }
+function segs(n,cuts){ var o=[],st=0; cuts.forEach(function(c){o.push([st,c-1]);st=c;}); o.push([st,n-1]); return o; }
+function splitN(sp,cuts){ var k=0; sp.forEach(function(x){ for(var i=0;i<cuts.length;i++) if(cuts[i]>x.st&&cuts[i]<=x.en){k++;break;} }); return k; }
+function strip(wEl,fEl,sp,cuts,n,fixed){
+  wEl.style.gridTemplateColumns=fEl.style.gridTemplateColumns="repeat("+n+",minmax(0,1fr))";
+  wEl.innerHTML="";
+  sp.forEach(function(x){
+    var d=document.createElement("div"),sx=cuts.some(function(c){return c>x.st&&c<=x.en;});
+    d.className="wd"+(x.loan?" loanw":"")+(sx?" split":"");
+    d.style.gridColumn=(x.st+1)+" / "+(x.en+2); d.textContent=x.lab; wEl.appendChild(d);
+  });
+  fEl.innerHTML="";
+  var sg=segs(n,cuts),cs=(sel!==null)?sg.filter(function(g){return sel>=g[0]&&sel<=g[1];})[0]:null;
+  for(var f=0;f<n;f++){
+    var b=document.createElement("button"); b.type="button"; b.className="fr"; b.dataset.f=f;
+    b.setAttribute("aria-label","frame "+(f*FM)+" ms");
+    if(cuts.indexOf(f)!==-1) b.className+=" cut";
+    if(cs){
+      if(f===sel) b.className+=" sel";
+      else if(f>=cs[0]&&f<=cs[1]) b.className+=" vis";
+      else if(fixed&&f>cs[1]&&f<=cs[1]+LOOK) b.className+=" vis";
+      else if(fixed&&f<cs[0]) b.className+=" cached";
+    }
+    b.addEventListener("click",function(e){ sel=parseInt(e.currentTarget.dataset.f,10); drawCuts(); });
+    fEl.appendChild(b);
+  }
+}
+function drawCuts(){
+  var s=SENTS[cur],sp=spansOf(s),n=sp[sp.length-1].en+1;
+  var fc=fixedCuts(n),pc=pauseCuts(s,sp,n);
+  strip(document.getElementById("w-f"),document.getElementById("f-f"),sp,fc,n,true);
+  strip(document.getElementById("w-b"),document.getElementById("f-b"),sp,pc,n,false);
+  document.getElementById("t-f").textContent=splitN(sp,fc);
+  document.getElementById("t-b").textContent=splitN(sp,pc);
+}
+exSel.addEventListener("change",function(e){ cur=parseInt(e.target.value,10)||0; sel=null; drawCuts(); });
+document.getElementById("chunk").addEventListener("change",function(e){ chunk=parseInt(e.target.value,10); sel=null; drawCuts(); });
+drawCuts();
+})();
+</script>
+
+</body>
+</html>
