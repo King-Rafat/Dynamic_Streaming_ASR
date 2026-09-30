@@ -124,7 +124,7 @@ flowchart TB
 
     subgraph AUDIO ["⏱️ Dynamic Block-Online inference"]
         direction LR
-        E[Audio] --> F[VAD<br>pause > 200 ms]
+        E[Audio] --> F[Silero VAD<br>pause > 200 ms]
         F --> G[Block C_k<br>up to 3 s]
         G --> H[Offline encoder E_off<br>global bidirectional attention]
         H --> I[CIF predictor]
@@ -292,16 +292,16 @@ CS-WER is `E_switch / E_root / E_morph`. **Lower is better throughout.**
 </tr>
 <tr>
 <td><sub><b>(a) Latency vs loanword WER.</b> Streaming (circles) plateaus; block-online (square) and offline (cross) sit below the curve.</sub></td>
-<td><sub><b>(b) Error topology.</b> Deletions (red) collapse from ≈7 % to &lt;2 %, converting into substitutions.</sub></td>
+<td><sub><b>(b) Error topology.</b> Deletions (red) collapse from ≈7 % to &lt;2 %, turning mostly into insertions.</sub></td>
 <td><sub><b>(c) Real outputs.</b> Streaming (blue) writes <i>pian</i>; block-online (red) recovers <b>piano</b> and <b>doctor</b>.</sub></td>
 </tr>
 </table>
 
-### 🔻 Deletions become substitutions
+### 🔻 Deletions become insertions
 
-Causal streaming is dominated by **deletions** (≈ 7 %) as the CIF predictor discards suffixes and code-switches sitting on chunk boundaries. Dynamic Block-Online pushes deletions below **2 %**, converting them into substitutions.
+Causal streaming is dominated by **deletions** (≈ 7 %) as the CIF predictor discards suffixes and code-switches sitting on chunk boundaries. Dynamic Block-Online pushes deletions below **2 %**, turning them mostly into insertions: inside a pause-bounded block the CIF predictor fires instead of staying silent, and occasionally fires once too often.
 
-Global WER penalises both equally. For an agglutinative language that trade is strongly favourable: a phonetic substitution preserves the morphological slot and the code-switched semantics, while a **deletion destroys them**. This is semantic recovery the WER metric does not reflect.
+Global WER penalises both equally. For an agglutinative language the two are not equal: an extra token leaves every reference word in place, while a **deletion removes the suffix or the switch**. CS-WER confirms the code-switched units themselves improve (E_morph .42 → .35), which global WER does not reflect.
 
 ### 💉 Injection ablation
 
@@ -349,12 +349,13 @@ An `E_root` of 22 on a noisy held-out set matches baseline performance on genera
 | OpenSLR SLR53 | ≈ 215 | [Kjartansson et al., SLTU 2018](http://dx.doi.org/10.21437/SLTU.2018-11) |
 | IndicVoices | ≈ 122 | [Javed et al., ACL Findings 2024](https://aclanthology.org/2024.findings-acl.639/) |
 | KathBath | ≈ 84 | [IndicSUPERB, 2022](https://github.com/AI4Bharat/IndicSUPERB) |
-| **Bangla total** | **≈ 750** | |
+| **Bangla total** | **≈ 496** | |
 | English Gigaspeech subset | ≈ 250 | [GigaSpeech, Interspeech 2021](https://github.com/SpeechColab/GigaSpeech) |
+| **Total (Bangla + English)** | **≈ 746** | |
 
 </div>
 
-**Test sets:** (1) a conversational Common Voice set with common English loanwords introduced via Script-Anchored Injection, and (2) a medical-domain set focused on menstrual health.
+**Test sets:** (1) a conversational set from the Common Voice Bengali test split (9,392 utterances) with common English loanwords introduced via Script-Anchored Injection, and (2) a medical-domain set focused on menstrual health.
 
 ---
 
